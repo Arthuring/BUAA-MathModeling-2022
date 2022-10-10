@@ -8,8 +8,38 @@
         &x_1 = 0
     \end{split}
 \end{equation*}
+\section{方法一：特征方程法}
+此题为齐次线性差分方程。
+
+特征方程为
+
+\begin{equation}
+    2\lambda^2-\lambda-2=0
+\end{equation}
+
+解得方程的解为
+
+$\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
+
+则$x=c_1\lambda_1^n + c_2\lambda_2^n = c_1(\frac{1+\sqrt[]{17}}{4})^n + c_2(\frac{1-\sqrt[]{17}}{4})^n$
+
+
+带入初始条件得：
+
+\begin{equation}
+    \begin{aligned}
+        &c_1+c_2=-2\\
+        &\frac{1+\sqrt[]{17}}{4}c_1 + \frac{1-\sqrt[]{17}}{4}c_2 = 0
+    \end{aligned}
+\end{equation}
+
+得$c_1=-1+\frac{\sqrt[]{17}}{17}, c_2=-1-\frac{\sqrt[]{17}}{17}$
+
+因此有$x = (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n$
 
 \chapter{}
+
+
 求下列微分方程的解析解和数值解，并画出曲线图，曲线图范围$t\in[0,1]$。
 \begin{equation*}
     \left \{
