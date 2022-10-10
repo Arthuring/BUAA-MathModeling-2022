@@ -1,0 +1,14 @@
+*.aux
+*.log
+*.out
+*.pdf
+*.gz
+*.toc
+*.lof
+*.lot
+*.synctex(busy)
+_minted-main
+MathModeling2022
+.idea
+venv
+*.zip

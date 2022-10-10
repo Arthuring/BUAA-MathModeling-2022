@@ -1,0 +1,265 @@
+\chapter{代码附录}
+\section{sympy解法}
+\subsection{代码}
+\begin{python}
+# -- coding: utf-8 --
+import sympy as sp
+
+l = sp.var('l')
+exp = (l - sp.Rational(6, 10)) * (l - sp.Rational(9, 10)) * (l - sp.Rational(7, 10)) - sp.Rational(9, 100) * (
+        l - sp.Rational(9, 10)) - sp.Rational(1, 100) * (l - sp.Rational(7, 10))
+expp = sp.simplify(exp)
+
+print("特征方程为：{}".format(expp))
+k = sp.var('k', positive=True, integer=True)
+
+L = sp.Matrix([[sp.Rational(6, 10), sp.Rational(1, 10), sp.Rational(3, 10)],
+               [sp.Rational(1, 10), sp.Rational(9, 10), 0],
+               [sp.Rational(3, 10), 0, sp.Rational(7, 10)]])
+x_0 = sp.Matrix([[2], [1], [1]])
+val = L.eigenvals()
+print("特征值：{}".format(val))
+vec = L.eigenvects()
+print("特征向量：{}".format(vec))
+
+P, D = L.diagonalize()  # 相似对角化
+print("相似对角化后P:")
+print(P)
+print("相似对角化后D:")
+print(D)
+
+Lk = P @ (D ** k) @ (P.inv())  # 计算L的k次方
+F = Lk @ sp.Matrix([[2], [1], [1]])  # 求出最终解x_k
+print("最终解为：\n{}".format(F))
+# ---------计算稳定解-------------------
+Pinv = P.inv()  # 计算P的逆矩阵
+c = (Pinv @ x_0)[0]  # 计算c的值
+print("c={}".format(c))
+print("稳定解为：\n{}".format(c * sp.Matrix([[1],[1],[1]])))
+\end{python}
+\subsection{输出}
+\begin{python}
+D:\program\Anaconda\python.exe D:/courses/gradeThree/mathModeling/hw1/solution_sympy.py
+特征方程为：l**3 - 11*l**2/5 + 149*l/100 - 29/100
+特征值：{1: 1, 3/5 - sqrt(7)/10: 1, sqrt(7)/10 + 3/5: 1}
+特征向量：[(1, 1, [Matrix([
+[1],
+[1],
+[1]])]), (3/5 - sqrt(7)/10, 1, [Matrix([
+[-(7 + 3*sqrt(7))/(2*sqrt(7) + 7)],
+[  3/(100*(3/50 + 3*sqrt(7)/100))],
+[                               1]])]), (sqrt(7)/10 + 3/5, 1, [Matrix([
+[-(-7 + 3*sqrt(7))/(-7 + 2*sqrt(7))],
+[    3/(100*(3/50 - 3*sqrt(7)/100))],
+[                                 1]])])]
+相似对角化后P:
+Matrix([[1, -sqrt(7)/3 - 1/3, -1/3 + sqrt(7)/3], [1, -2/3 + sqrt(7)/3, -sqrt(7)/3 - 2/3], [1, 1, 1]])
+相似对角化后D:
+Matrix([[1, 0, 0], [0, 3/5 - sqrt(7)/10, 0], [0, 0, sqrt(7)/10 + 3/5]])
+最终解为：
+Matrix([[3*(3/5 - sqrt(7)/10)**k*(-sqrt(7)/3 - 1/3)/(28/3 - 2*sqrt(7)/3) - (-6 + 3*sqrt(7))*(3/5 - sqrt(7)/10)**k*(-sqrt(7)/3 - 1/3)/(-28 + 2*sqrt(7)) + 2*(3/5 - sqrt(7)/10)**k*(3 + 3*sqrt(7))*(-sqrt(7)/3 - 1/3)/(-28 + 2*sqrt(7)) + (-1/3 + sqrt(7)/3)*(-2*sqrt(7)/21 - 1/6)*(sqrt(7)/10 + 3/5)**k + (-1/3 + sqrt(7)/3)*(1/3 - sqrt(7)/42)*(sqrt(7)/10 + 3/5)**k + 2*(-1/3 + sqrt(7)/3)*(-1/6 + 5*sqrt(7)/42)*(sqrt(7)/10 + 3/5)**k + 4/3], [2*(-2/3 + sqrt(7)/3)*(3/5 - sqrt(7)/10)**k*(3 + 3*sqrt(7))/(-28 + 2*sqrt(7)) - (-6 + 3*sqrt(7))*(-2/3 + sqrt(7)/3)*(3/5 - sqrt(7)/10)**k/(-28 + 2*sqrt(7)) + 3*(-2/3 + sqrt(7)/3)*(3/5 - sqrt(7)/10)**k/(28/3 - 2*sqrt(7)/3) + 2*(-1/6 + 5*sqrt(7)/42)*(-sqrt(7)/3 - 2/3)*(sqrt(7)/10 + 3/5)**k + (1/3 - sqrt(7)/42)*(-sqrt(7)/3 - 2/3)*(sqrt(7)/10 + 3/5)**k + (-sqrt(7)/3 - 2/3)*(-2*sqrt(7)/21 - 1/6)*(sqrt(7)/10 + 3/5)**k + 4/3], [2*(3/5 - sqrt(7)/10)**k*(3 + 3*sqrt(7))/(-28 + 2*sqrt(7)) - (-6 + 3*sqrt(7))*(3/5 - sqrt(7)/10)**k/(-28 + 2*sqrt(7)) + 3*(3/5 - sqrt(7)/10)**k/(28/3 - 2*sqrt(7)/3) + (-2*sqrt(7)/21 - 1/6)*(sqrt(7)/10 + 3/5)**k + (1/3 - sqrt(7)/42)*(sqrt(7)/10 + 3/5)**k + 2*(-1/6 + 5*sqrt(7)/42)*(sqrt(7)/10 + 3/5)**k + 4/3]])
+c=4/3
+稳定解为：
+Matrix([[4/3], [4/3], [4/3]])
+
+Process finished with exit code 0
+
+\end{python}
+\section{numpy解法求数值解}
+\subsection{代码}
+\begin{python}
+    # -- coding: utf-8 --
+# -- coding: utf-8 --
+import sympy as sp
+import numpy as np
+
+l = sp.var('l')
+exp = (l - sp.Rational(6, 10)) * (l - sp.Rational(9, 10)) * (l - sp.Rational(7, 10)) - sp.Rational(9, 100) * (
+        l - sp.Rational(9, 10)) - sp.Rational(1, 100) * (l - sp.Rational(7, 10))
+expp = sp.simplify(exp)
+
+print("特征方程为：{}".format(expp))
+k = sp.var('k', positive=True, integer=True)
+
+L = sp.Matrix([[0.6, 0.1, 0.3],
+           [0.1, 0.9, 0],
+           [0.3, 0, 0.7]])
+
+Lp = np.mat([[0.6, 0.1, 0.3],
+           [0.1, 0.9, 0],
+           [0.3, 0, 0.7]])
+x_0 = sp.Matrix([[2], [1], [1]])
+val, vec = np.linalg.eig(Lp)
+print("特征值：{}".format(val))
+
+print("特征向量：{}".format(vec))
+
+P, D = L.diagonalize()  # 相似对角化
+print("相似对角化后P:")
+print(P)
+print("相似对角化后D:")
+print(D)
+
+Lk = P @ (D ** k) @ (P.inv())  # 计算L的k次方
+F = Lk @ np.array([[2], [1], [1]])  # 求出最终解x_k
+print("最终解为：\n{}".format(F))
+\end{python}
+\subsection{输出}
+\begin{python}
+    特征方程为：l**3 - 11*l**2/5 + 149*l/100 - 29/100
+特征值：[0.33542487 1.         0.86457513]
+特征向量：[[ 0.76505532 -0.57735027  0.28523152]
+ [-0.13550992 -0.57735027 -0.8051731 ]
+ [-0.6295454  -0.57735027  0.51994159]]
+相似对角化后P:
+Matrix([[-0.765055323929465, -0.285231516480645, 0.577350269189626], [0.135509922732534, 0.805173104063772, 0.577350269189626], [0.629545401196931, -0.519941587583127, 0.577350269189626]])
+相似对角化后D:
+Matrix([[0.335424868893541, 0, 0], [0, 0.864575131106459, 0], [0, 0, 1.00000000000000]])
+最终解为：
+Matrix([[0.585309648672818*0.335424868893541**k + 0.0813570179938488*0.864575131106459**k + 1.33333333333333*1.0**k], [-0.103672587831795*0.335424868893541**k - 0.229660745501538*0.864575131106459**k + 1.33333333333333*1.0**k], [-0.481637060841023*0.335424868893541**k + 0.14830372750769*0.864575131106459**k + 1.33333333333333*1.0**k]])
+
+\end{python}
+
+\section{numpy解法求解的数值}
+\subsection{代码}
+\begin{python}
+# -- coding: utf-8 --
+import numpy as np
+import pandas as pd
+import pylab as plt
+
+L = np.mat([[0.6, 0.1, 0.3],
+           [0.1, 0.9, 0],
+           [0.3, 0, 0.7]])
+
+x_0 = np.mat([[2], [1], [1]])
+
+val,vec = np.linalg.eig(L)
+print("特征值：{}".format(val))
+print("特征向量：{}".format(vec))
+
+x_1 = []
+x_2 = []
+x_3 = []
+x_k = []
+limt = []
+temp = x_0
+
+for i in range(20):
+    temp = L.dot(temp)
+    x_k.append(temp.tolist())
+
+    print("k = {}".format(i+1))
+    print("x_k = {}".format(temp))
+index = [i for i in range(20)]
+df = pd.DataFrame(data={'x_k': x_k})
+df.to_csv('./data.csv', sep=';')
+temp = x_0
+for i in range (100):
+    temp = L.dot(temp)
+    x_1.append(temp.tolist()[0][0])
+    x_2.append(temp.tolist()[1][0])
+    x_3.append(temp.tolist()[2][0])
+    limt.append(4.0/3.0)
+
+plt.xlabel("k")
+plt.ylabel("y")
+plt.title(r'Numerical solution of each component of $x_k$')
+plt.plot(x_1,label=r'$x_k[1]$')
+plt.plot(x_2,label=r'$x_k[2]$')
+plt.plot(x_3,label=r'$x_k[3]$')
+plt.plot(limt,'k--')
+plt.legend(loc=1)
+plt.text(60,1.35,r'$y = 4/3$')
+plt.show()
+\end{python}
+\subsection{输出}
+\begin{python}
+特征值：[0.33542487 1.         0.86457513]
+特征向量：[[ 0.76505532 -0.57735027  0.28523152]
+ [-0.13550992 -0.57735027 -0.8051731 ]
+ [-0.6295454  -0.57735027  0.51994159]]
+k = 1
+x_k = [[1.6]
+ [1.1]
+ [1.3]]
+k = 2
+x_k = [[1.46]
+ [1.15]
+ [1.39]]
+k = 3
+x_k = [[1.408]
+ [1.181]
+ [1.411]]
+k = 4
+x_k = [[1.3862]
+ [1.2037]
+ [1.4101]]
+k = 5
+x_k = [[1.37512]
+ [1.22195]
+ [1.40293]]
+k = 6
+x_k = [[1.368146]
+ [1.237267]
+ [1.394587]]
+k = 7
+x_k = [[1.3629904]
+ [1.2503549]
+ [1.3866547]]
+k = 8
+x_k = [[1.35882614]
+ [1.26161845]
+ [1.37955541]]
+k = 9
+x_k = [[1.35532415]
+ [1.27133922]
+ [1.37333663]]
+k = 10
+x_k = [[1.3523294 ]
+ [1.27973771]
+ [1.36793289]]
+k = 11
+x_k = [[1.34975128]
+ [1.28699688]
+ [1.36325184]]
+k = 12
+x_k = [[1.34752601]
+ [1.29327232]
+ [1.35920167]]
+k = 13
+x_k = [[1.34560334]
+ [1.29869769]
+ [1.35569897]]
+k = 14
+x_k = [[1.34394146]
+ [1.30338825]
+ [1.35267028]]
+k = 15
+x_k = [[1.34250479]
+ [1.30744358]
+ [1.35005164]]
+k = 16
+x_k = [[1.34126272]
+ [1.3109497 ]
+ [1.34778758]]
+k = 17
+x_k = [[1.34018888]
+ [1.313981  ]
+ [1.34583012]]
+k = 18
+x_k = [[1.33926046]
+ [1.31660179]
+ [1.34413775]]
+k = 19
+x_k = [[1.33845778]
+ [1.31886765]
+ [1.34267456]]
+k = 20
+x_k = [[1.3377638 ]
+ [1.32082667]
+ [1.34140953]]
+
+Process finished with exit code 0
+
+\end{python}
