@@ -19,9 +19,9 @@
 
 解得方程的解为
 
-$\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
+$\lambda_1 = \dfrac{1+\sqrt[]{17}}{4}, \lambda_2 = \dfrac{1-\sqrt[]{17}}{4} $
 
-则$x_n=c_1\lambda_1^n + c_2\lambda_2^n = c_1(\frac{1+\sqrt[]{17}}{4})^n + c_2(\frac{1-\sqrt[]{17}}{4})^n$
+则$x_n=c_1\lambda_1^n + c_2\lambda_2^n = c_1(\dfrac{1+\sqrt[]{17}}{4})^n + c_2(\dfrac{1-\sqrt[]{17}}{4})^n$
 
 
 带入初始条件得：
@@ -29,13 +29,13 @@ $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
 \begin{equation}
     \begin{aligned}
         &c_1+c_2=-2\\
-        &\frac{1+\sqrt[]{17}}{4}c_1 + \frac{1-\sqrt[]{17}}{4}c_2 = 0
+        &\dfrac{1+\sqrt[]{17}}{4}c_1 + \dfrac{1-\sqrt[]{17}}{4}c_2 = 0
     \end{aligned}
 \end{equation}
 
 得$c_1=-1+\frac{\sqrt[]{17}}{17}, c_2=-1-\frac{\sqrt[]{17}}{17}$
 
-因此有$x_n = (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n$
+因此有$x_n = (-1+\dfrac{\sqrt[]{17}}{17})(\dfrac{1+\sqrt[]{17}}{4})^n+(-1-\dfrac{\sqrt[]{17}}{17})( \dfrac{1-\sqrt[]{17}}{4} )^n$
 
 
 \section{方法二：线性代数法}
@@ -108,13 +108,13 @@ $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
     \begin{aligned}
     &A = PDP^{-1} \\
     &P = \begin{bmatrix}
-        \frac{1-\sqrt[]{17}}{4} & \frac{1+\sqrt[]{17}}{4} \\
+        \dfrac{1-\sqrt[]{17}}{4} & \dfrac{1+\sqrt[]{17}}{4} \\
         1 & 1 
     \end{bmatrix}
     \\
     &D=\begin{bmatrix}
-        \frac{1-\sqrt[]{17}}{4} & 0 \\
-        0 & \frac{1+\sqrt[]{17}}{4} 
+        \dfrac{1-\sqrt[]{17}}{4} & 0 \\
+        0 & \dfrac{1+\sqrt[]{17}}{4} 
     \end{bmatrix}
 \end{aligned} 
 \end{equation}
@@ -137,7 +137,7 @@ $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
         x_0
     \end{bmatrix}\\
     &= \begin{bmatrix}
-        \frac{(-1 + \sqrt[]{17})(\frac{1-\sqrt[]{17}}{4})^n}{\frac{17-\sqrt[]{17}}{4}} - (\frac{1+\sqrt[]{17}}{2})(\frac{17-\sqrt[]{17}}{34})(\frac{1+\sqrt[]{17}}{4})^n \\
+        \dfrac{(-1 + \sqrt[]{17})(\frac{1-\sqrt[]{17}}{4})^n}{\frac{17-\sqrt[]{17}}{4}} - (\frac{1+\sqrt[]{17}}{2})(\frac{17-\sqrt[]{17}}{34})(\frac{1+\sqrt[]{17}}{4})^n \\
         (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n
     \end{bmatrix}
 \end{aligned}
@@ -158,3 +158,43 @@ $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
         \end{aligned}
     \right . 
 \end{equation*}
+
+\section{解析解}
+
+利用sympy库，求解微分方程组，得到的解析解如下。
+
+\begin{equation}
+    \begin{aligned}
+        x(t) &=\dfrac{-\sqrt[]{7}e^{\frac{3t}{2}}sin(\frac{\sqrt[]{7}t}{2})}{7} + e^{\frac{3t}{2}}cos(\frac{\sqrt[]{7}t}{2})\\
+        y(t) &= \dfrac{2\sqrt{7}e^{\frac{3t}{2}}sin(\frac{\sqrt[]{7}t}{2})}{7}
+    \end{aligned}
+\end{equation}
+
+\section{数值解}
+
+此方程组是一阶常微分方程组，直接利用 scipy.integrate 模块的 odeint 函数求解，并用pylab作图。
+x-t图如\ref{fig:x-t}，y-t图如\ref{fig:y-t}，y-x图如\ref{fig:y-x}。
+
+\begin{figure}[htbp]
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{x-t.png}
+    \end{center}
+   \caption[]{$x-t$}
+    \label{fig:x-t}
+\end{figure}
+
+\begin{figure}[htbp]
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{y-t.png}
+    \end{center}
+   \caption[]{$y-t$}
+    \label{fig:y-t}
+\end{figure}
+
+\begin{figure}[htbp]
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{y-x.png}
+    \end{center}
+   \caption[]{$y-x$}
+    \label{fig:y-x}
+\end{figure}
