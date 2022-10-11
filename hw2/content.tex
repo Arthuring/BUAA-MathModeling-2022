@@ -21,7 +21,7 @@
 
 $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
 
-则$x=c_1\lambda_1^n + c_2\lambda_2^n = c_1(\frac{1+\sqrt[]{17}}{4})^n + c_2(\frac{1-\sqrt[]{17}}{4})^n$
+则$x_n=c_1\lambda_1^n + c_2\lambda_2^n = c_1(\frac{1+\sqrt[]{17}}{4})^n + c_2(\frac{1-\sqrt[]{17}}{4})^n$
 
 
 带入初始条件得：
@@ -35,7 +35,7 @@ $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
 
 得$c_1=-1+\frac{\sqrt[]{17}}{17}, c_2=-1-\frac{\sqrt[]{17}}{17}$
 
-因此有$x = (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n$
+因此有$x_n = (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n$
 
 
 \section{方法二：线性代数法}
@@ -104,7 +104,46 @@ $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
 
 将矩阵相似对角化得
 
+\begin{equation}
+    \begin{aligned}
+    &A = PDP^{-1} \\
+    &P = \begin{bmatrix}
+        \frac{1-\sqrt[]{17}}{4} & \frac{1+\sqrt[]{17}}{4} \\
+        1 & 1 
+    \end{bmatrix}
+    \\
+    &D=\begin{bmatrix}
+        \frac{1-\sqrt[]{17}}{4} & 0 \\
+        0 & \frac{1+\sqrt[]{17}}{4} 
+    \end{bmatrix}
+\end{aligned} 
+\end{equation}
 
+因此最终解得
+
+\begin{equation}
+    \begin{aligned}
+    \begin{bmatrix}
+        x_{n+1} \\
+        x_{n} 
+    \end{bmatrix} &= 
+    A^n
+    \begin{bmatrix}
+        x_{1} \\
+        x_0
+    \end{bmatrix}\\
+     &= PD^nP^{-1}\begin{bmatrix}
+        x_{1} \\
+        x_0
+    \end{bmatrix}\\
+    &= \begin{bmatrix}
+        \frac{(-1 + \sqrt[]{17})(\frac{1-\sqrt[]{17}}{4})^n}{\frac{17-\sqrt[]{17}}{4}} - (\frac{1+\sqrt[]{17}}{2})(\frac{17-\sqrt[]{17}}{34})(\frac{1+\sqrt[]{17}}{4})^n \\
+        (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n
+    \end{bmatrix}
+\end{aligned}
+\end{equation}
+
+因此有$x_n = (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n$
 
 \chapter{}
 
