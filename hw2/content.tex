@@ -37,6 +37,75 @@ $\lambda_1 = \frac{1+\sqrt[]{17}}{4}, \lambda_2 = \frac{1-\sqrt[]{17}}{4} $
 
 因此有$x = (-1+\frac{\sqrt[]{17}}{17})(\frac{1+\sqrt[]{17}}{4})^n+(-1-\frac{\sqrt[]{17}}{17})( \frac{1-\sqrt[]{17}}{4} )^n$
 
+
+\section{方法二：线性代数法}
+
+将方程进行等价变形，得
+
+\begin{equation}
+    \left \{
+        \begin{aligned}
+        &x_{n+2} = \frac{1}{2}x_{n+1} + x_n\\
+        &x_{n+1} = x_{n+1}
+        \end{aligned}
+    \right .
+\end{equation}
+
+因此有转移矩阵方程
+
+\begin{equation}
+    \begin{bmatrix}
+        x_{n+2} \\
+        x_{n+1} 
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \frac{1}{2} & 1 \\
+        1 & 0 
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_{n+1} \\
+        x_n
+    \end{bmatrix}
+\end{equation}
+
+设$A = \begin{bmatrix}
+    \frac{1}{2} & 1 \\
+    1 & 0 
+\end{bmatrix}$，则有
+
+\begin{equation}
+    \begin{bmatrix}
+        x_{n+1} \\
+        x_{n} 
+    \end{bmatrix} =
+    A^n
+    \begin{bmatrix}
+        x_{1} \\
+        x_0
+    \end{bmatrix}
+\end{equation}
+
+矩阵$A$的特征方程为
+
+\begin{equation}
+    \begin{split}  
+   |\lambda E - A | &= 
+   \begin{vmatrix}
+    \lambda - \frac{1}{2} & -1 \\
+    -1 & \lambda 
+   \end{vmatrix}
+   \\
+   &=(\lambda -\frac{1}{2})\lambda - 1\\
+   &= \lambda ^ 2 - \frac{1}{2} \lambda  -1
+\end{split}
+\end{equation}
+
+得$\lambda_{1,2} = \frac{1 \pm \sqrt{17} }{4} $
+
+将矩阵相似对角化得
+
+
+
 \chapter{}
 
 
