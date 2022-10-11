@@ -1,0 +1,17 @@
+D:\program\Anaconda\python.exe "D:\program\PyCharm 2021.3\plugins\python\helpers\pydev\pydevd.py" --multiproc --qt-support=auto --client 127.0.0.1 --port 57716 --file D:/courses/gradeThree/mathModeling/hw2/solve_sympy.py
+Connected to pydev debugger (build 213.5744.248)
+特征方程为：l**3 - 21*l**2/10 + 133*l/100 - 227/1000
+特征值：{1/4 - sqrt(17)/4: 1, 1/4 + sqrt(17)/4: 1}
+特征向量：[(1/4 - sqrt(17)/4, 1, [Matrix([
+[1/4 - sqrt(17)/4],
+[               1]])]), (1/4 + sqrt(17)/4, 1, [Matrix([
+[1/4 + sqrt(17)/4],
+[               1]])])]
+相似对角化后P:
+Matrix([[1/4 - sqrt(17)/4, 1/4 + sqrt(17)/4], [1, 1]])
+相似对角化后D:
+Matrix([[1/4 - sqrt(17)/4, 0], [0, 1/4 + sqrt(17)/4]])
+最终解为：
+Matrix([[-2*(1/4 - sqrt(17)/4)*(1/4 - sqrt(17)/4)**k/(17/8 - sqrt(17)/8) - 2*(1/4 + sqrt(17)/4)*(1/4 + sqrt(17)/4)**k*(1/2 - sqrt(17)/34)], [-2*(1/4 - sqrt(17)/4)**k/(17/8 - sqrt(17)/8) - 2*(1/4 + sqrt(17)/4)**k*(1/2 - sqrt(17)/34)]])
+
+Process finished with exit code 0
