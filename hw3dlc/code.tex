@@ -1,0 +1,182 @@
+\chapter{代码附录}
+\section{第一问}
+\subsection{小数据}
+\begin{python}
+# -- coding: utf-8 --
+import math
+
+import numpy as np
+import cvxpy as cp
+
+K = 30
+N = 42
+
+# 读取文件中的点
+points = np.genfromtxt("points_xyz_" + str(N) + ".txt", dtype=float)
+
+# 计算点之间的覆盖半径
+d = np.zeros((N, N))
+for i in range(N):
+    for j in range(N):
+        cos = np.round(points[i].dot(points[j]) / (np.linalg.norm(points[i]) * np.linalg.norm(points[j])), 4)
+        d[i, j] = np.arccos(cos)
+
+# 定义变量 h可取0，1， 取1表示选择该点， 取0表示不选该点
+h = cp.Variable(N, boolean=True)
+theta = cp.Variable(1, pos=True)
+
+# 优化目标
+object = cp.Maximize(theta[0])
+
+# h可取0，1
+for i in range(N):
+    conds.append(h[i] >= 0)
+    conds.append(h[i] <= 1)
+
+# theta >= d[i, j]
+for i in range(N):
+    for j in range(i + 1, N):
+        conds.append(theta[0] - (1 - h[i]) * math.pi - (1 - h[j]) * math.pi <= d[i, j])
+
+# 求解
+prob = cp.Problem(object, conds)
+prob.solve(solver='GUROBI')
+
+# 输出
+ans = np.nonzero(h.value)
+theta_max = theta[0].value
+
+print("选择点：", ans)
+print("最优值：", theta_max)
+
+\end{python}
+
+\subsection{大数据}
+\begin{python}
+    # -- coding: utf-8 --
+import math
+
+import numpy as np
+import cvxpy as cp
+import gurobipy as gp
+
+gp.setParam("TimeLimit", 600)
+gp.setParam("MIPFocus", 1)
+
+
+K = 30
+N = 162
+
+# 读取文件中的点
+points = np.genfromtxt("points_xyz_" + str(N) + ".txt", dtype=float)
+
+# 计算点之间的覆盖半径
+d = np.zeros((N, N))
+for i in range(N):
+    for j in range(N):
+        cos = np.round(points[i].dot(points[j]) / (np.linalg.norm(points[i]) * np.linalg.norm(points[j])), 4)
+        d[i, j] = np.arccos(cos)
+
+# 定义变量 h可取0，1， 取1表示选择该点， 取0表示不选该点
+h = cp.Variable(N, boolean=True)
+theta = cp.Variable(1, pos=True)
+
+# 优化目标
+object = cp.Maximize(theta[0])
+
+# 限制条件 总点数为k，theta范围[0,pi]
+conds = [sum(h) == K,
+         theta[0] >= 0,
+         theta[0] <= math.pi]
+# h可取0，1
+# for i in range(N):
+#     conds.append(h[i] >= 0)
+#     conds.append(h[i] <= 1)
+
+# theta >= d[i, j]
+for i in range(N):
+    for j in range(i + 1, N):
+        conds.append(theta[0] - (1 - h[i]) * math.pi - (1 - h[j]) * math.pi <= d[i, j])
+
+# 求解
+prob = cp.Problem(object, conds)
+prob.solve(solver='GUROBI', verbose=True, MIPFocus=1)
+
+# 输出
+ans = np.nonzero(h.value)
+theta_max = theta[0].value
+
+print("选择点：", ans)
+print("最优值：", theta_max)
+
+\end{python}
+
+\section{第二问}
+\begin{python}
+    # -- coding: utf-8 --
+import numpy as np
+import cvxpy as cp
+import gurobipy as gp
+gp.setParam("TimeLimit", 60)
+gp.setParam("MIPFocus", 3)
+
+
+S = 2
+K = [10, 15]
+w = 0.5
+
+N = 162
+
+# 读取文件中的点
+points = np.genfromtxt("points_xyz_" + str(N) + ".txt", dtype=float)
+
+# 计算点之间的覆盖半径
+d = np.zeros((N, N))
+for i in range(N):
+    for j in range(N):
+        cos = np.round(points[i].dot(points[j]) / (np.linalg.norm(points[i]) * np.linalg.norm(points[j])), 4)
+        d[i, j] = np.arccos(cos)
+
+# h[i][j] = 1 表示第j号点选入第i组   h[i][j] = 0表示第j号点不选入第i组
+h = cp.Variable((S, N), boolean=True)
+# theta[0, S-1]为各组的最小覆盖半径，theta[S]是所有点的最小覆盖半径
+theta = cp.Variable(S + 1, pos=True)
+
+object = cp.Maximize(w / S * sum(theta[:-1]) + (1 - w) * theta[S])
+conds = []
+# theta 范围
+for i in range(S + 1):
+    conds.append(theta[i] >= 0)
+    conds.append(theta[i] <= np.pi)
+# 每组选择的点的数量
+for i in range(S):
+    conds.append(cp.sum(h[i]) == K[i])
+# 一个点只能在一个组
+for i in range(N):
+    conds.append(cp.sum(h[:, i]) <= 1)
+
+# 每组的theta大于等于组中各点间距
+for i in range(S):
+    for j in range(N):
+        for k in range(j+1,N):
+            conds.append(theta[i] - (1 - h[i, j]) * np.pi - (1 - h[i, k]) * np.pi <= d[j, k])
+
+# 总体的theta大于等于各点间距
+for i in range(N):
+    for j in range(i + 1, N):
+        conds.append(theta[S] - (1 - cp.sum(h[:, i])) * np.pi - (1 - cp.sum(h[:,j])) * np.pi <= d[i, j])
+
+prob = cp.Problem(object, conds)
+prob.solve(solver='GUROBI')
+
+h_value = h.value
+theta_value = theta.value
+
+for i in range(S):
+    print("\n第", i+1, "组选择：")
+    for j in range(N):
+        if h_value[i][j] == 1:
+            print(j+1, " ", end="")
+
+print("总最优值:", prob.value)
+\end{python}

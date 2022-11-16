@@ -1,0 +1,675 @@
+\chapter{代码附录}
+\section{问题一}
+\subsection{不同Nh}
+\begin{python}
+# -- coding: utf-8 --
+import random
+
+import numpy
+import numpy as np
+from scipy.optimize import curve_fit
+import pylab as plt
+
+N = 100
+h = 0.001
+
+
+def g(x1, a, b):
+    return 1 / (b * np.sqrt(2 * np.pi)) * np.exp(-(x1 - a) ** 2 / (2 * b ** 2))
+
+
+def y(x1):
+    return g(x1, 0, 1) + g(x1, 1.5, 1)
+
+
+def RMSE(predict_v, exact_v):
+    sum = 0
+    for i in range(len(exact_v)):
+        sum += (predict_v[i] - exact_v[i]) ** 2
+    return np.sqrt(sum / len(exact_v)).round(4)
+
+
+X = numpy.linspace(0, 4, N).round(4)
+Y = y(X)
+Yr = Y + numpy.random.normal(0, np.sqrt(h), N)
+
+index = [a for a in range(0, N)]
+random.shuffle(index)
+train = [[], [], []]
+verify = [[], [], []]
+test = [[], [], []]
+for i in range(0, int(N * 0.8)):
+    train[0].append(X[index[i]])
+    train[1].append(Yr[index[i]])
+    train[2].append(Y[index[i]])
+for i in range(int(N * 0.8), int(N * 0.9)):
+    verify[0].append(X[index[i]])
+    verify[1].append(Yr[index[i]])
+    verify[2].append(Y[index[i]])
+for i in range(int(N * 0.9), int(N)):
+    test[0].append(X[index[i]])
+    test[1].append(Yr[index[i]])
+    test[2].append(Y[index[i]])
+
+model1 = lambda t, w1, a1, b1, w2, a2, b2: w1 * (
+        1 / (b1 * np.sqrt(2 * np.pi)) * np.exp(-(t - a1) ** 2 / (2 * b1 ** 2))) + \
+                                           w2 * (1 / (b2 * np.sqrt(2 * np.pi)) * np.exp(-(t - a2) ** 2 / (2 * b2 ** 2)))
+
+p0 = [1,1,1,1,1,1]
+print("参数初始值为：", p0)
+p1 = curve_fit(model1, train[0], train[1], p0)[0]
+print("参数拟合值为:", p1)
+train_Yn = model1(train[0], *p1)
+test_Yn = model1(test[0], *p1)
+# -------------画图--------------------------
+figure, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6), dpi=80)
+
+Y_p = model1(X, *p1)
+
+axes[0].set_title("Train")
+axes[0].plot(X, Y_p, color='r', label='predict')
+axes[0].scatter(train[0], train[1], label='exact')
+axes[0].plot(X,Y,color='g', label='func')
+train_r = RMSE(train[1], train_Yn)
+
+print("训练集RMSE=", train_r)
+axes[1].set_title("Test")
+axes[1].plot(X, Y_p, color='r', label='predict')
+axes[1].scatter(test[0], test[1], label='exact')
+axes[1].plot(X,Y,color='g', label='func')
+test_r = RMSE(test[1], test_Yn)
+print("测试集RMSE=", test_r)
+
+# figure.set_title("N="+str(N)+" h="+str(h))
+axes[0].legend()  # 默认loc=Best
+axes[1].legend()
+axes[0].set_xlabel(' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(train_r)+ '\nparameter initial= ' + str(p0))
+axes[1].set_xlabel(' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(test_r)+ '\nparameter initial= ' + str(p0))
+
+
+plt.show()
+
+
+\end{python}
+\subsection{不同参数初值}
+\begin{python}
+    # -- coding: utf-8 --
+import random
+
+import numpy
+import numpy as np
+from scipy.optimize import curve_fit
+import pylab as plt
+
+N = 100
+h = 0.001
+
+
+def g(x1, a, b):
+    return 1 / (b * np.sqrt(2 * np.pi)) * np.exp(-(x1 - a) ** 2 / (2 * b ** 2))
+
+
+def y(x1):
+    return g(x1, 0, 1) + g(x1, 1.5, 1)
+
+
+def RMSE(predict_v, exact_v):
+    sum = 0
+    for i in range(len(exact_v)):
+        sum += (predict_v[i] - exact_v[i]) ** 2
+    return np.sqrt(sum / len(exact_v)).round(4)
+
+
+X = numpy.linspace(0, 4, N).round(4)
+Y = y(X)
+Yr = Y + numpy.random.normal(0, np.sqrt(h), N)
+
+index = [a for a in range(0, N)]
+random.shuffle(index)
+train = [[], [], []]
+verify = [[], [], []]
+test = [[], [], []]
+for i in range(0, int(N * 0.8)):
+    train[0].append(X[index[i]])
+    train[1].append(Yr[index[i]])
+    train[2].append(Y[index[i]])
+for i in range(int(N * 0.8), int(N * 0.9)):
+    verify[0].append(X[index[i]])
+    verify[1].append(Yr[index[i]])
+    verify[2].append(Y[index[i]])
+for i in range(int(N * 0.9), int(N)):
+    test[0].append(X[index[i]])
+    test[1].append(Yr[index[i]])
+    test[2].append(Y[index[i]])
+
+model1 = lambda t, w1, a1, b1, w2, a2, b2: w1 * (
+        1 / (b1 * np.sqrt(2 * np.pi)) * np.exp(-(t - a1) ** 2 / (2 * b1 ** 2))) + \
+                                           w2 * (1 / (b2 * np.sqrt(2 * np.pi)) * np.exp(-(t - a2) ** 2 / (2 * b2 ** 2)))
+
+p0 = np.random.randn(6).round(4)
+print("参数初始值为：", p0)
+p1 = curve_fit(model1, train[0], train[1], p0)[0]
+print("参数拟合值为:", p1)
+train_Yn = model1(train[0], *p1)
+test_Yn = model1(test[0], *p1)
+# -------------画图--------------------------
+figure, axes = plt.subplots(nrows=2, ncols=2, figsize=(12, 12), dpi=80)
+
+Y_p = model1(X, *p1)
+
+axes[0][0].set_title("Train")
+axes[0][0].plot(X, Y_p, color='r', label='predict')
+axes[0][0].scatter(train[0], train[1], label='exact')
+train_r = RMSE(train[1], train_Yn)
+
+print("训练集RMSE=", train_r)
+axes[0][1].set_title("Test")
+axes[0][1].plot(X, Y_p, color='r', label='predict')
+axes[0][1].scatter(test[0], test[1], label='exact')
+test_r = RMSE(test[1], test_Yn)
+print("测试集RMSE=", test_r)
+
+# figure.set_title("N="+str(N)+" h="+str(h))
+axes[0][0].legend()  # 默认loc=Best
+axes[0][1].legend()
+axes[0][0].set_xlabel(' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(train_r)+ '\nparameter initial= ' + str(p0))
+axes[0][1].set_xlabel(' N=' + str(N) + ' h=' + str(h) + 'RMSE=' + str(test_r)+ '\nparameter initial= ' + str(p0))
+
+p00 = [1, 1, 1, 1, 1, 1]
+print("参数初始值为：", p00)
+p11 = curve_fit(model1, train[0], train[1], p00)[0]
+print("参数拟合值为:", p11)
+train_Yn1 = model1(train[0], *p11)
+test_Yn1 = model1(test[0], *p11)
+# -------------画图--------------------------
+
+
+Y_p = model1(X, *p11)
+
+axes[1][0].set_title("Train")
+axes[1][0].plot(X, Y_p, color='r', label='predict')
+axes[1][0].scatter(train[0], train[1], label='exact')
+train_r1 = RMSE(train[1], train_Yn1)
+
+print("训练集RMSE=", train_r1)
+axes[1][1].set_title("Test")
+axes[1][1].plot(X, Y_p, color='r', label='predict')
+axes[1][1].scatter(test[0], test[1], label='exact')
+test_r1 = RMSE(test[1], test_Yn1)
+print("测试集RMSE=", test_r1)
+
+# figure.set_title("N="+str(N)+" h="+str(h))
+axes[1][0].legend()  # 默认loc=Best
+axes[1][1].legend()
+axes[1][0].set_xlabel(' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(train_r1) + '\nparameter initial= ' + str(p00))
+axes[1][1].set_xlabel(' N=' + str(N) + ' h=' + str(h) + 'RMSE=' + str(test_r1) + '\nparameter initial= ' + str(p00))
+
+plt.show()
+
+\end{python}
+
+\section{问题2}
+
+\begin{python}
+    # -- coding: utf-8 --
+import random
+
+import numpy
+import numpy as np
+from scipy.optimize import curve_fit
+import pylab as plt
+
+N = 100
+h = 0.001
+K = 9
+
+
+def g(x1, a, b):
+    return 1 / (b * np.sqrt(2 * np.pi)) * np.exp(-(x1 - a) ** 2 / (2 * b ** 2))
+
+
+def y(x1):
+    return g(x1, 0, 1) + g(x1, 1.5, 1)
+
+
+def RMSE(predict_v, exact_v):
+    sum = 0
+    for i in range(len(exact_v)):
+        sum += (predict_v[i] - exact_v[i]) ** 2
+    return np.sqrt(sum / len(exact_v)).round(4)
+
+
+def model21(t, a0, a1):
+    return a0 + a1 * np.power(t, 1)
+
+def model23(t, a0, a1, a2, a3):
+    return a0 + a1 * np.power(t, 1) + a2 * np.power(t, 2) + + a3 * np.power(t, 3)
+
+def model29(t, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9):
+    return a0 + a1 * np.power(t, 1) + a2 * np.power(t, 2) + + a3 * np.power(t, 3) \
+           + a4 * np.power(t, 4) + a5 * np.power(t, 5) + a6 * np.power(t, 6) \
+           + a7 * np.power(t, 7) + a8 * np.power(t, 8) + a9 * np.power(t, 9)
+
+
+X = numpy.linspace(0, 4, N).round(4)
+Y = y(X)
+Yr = Y + numpy.random.normal(0, np.sqrt(h), N)
+
+index = [a for a in range(0, N)]
+random.shuffle(index)
+train = [[], [], []]
+verify = [[], [], []]
+test = [[], [], []]
+for i in range(0, int(N * 0.8)):
+    train[0].append(X[index[i]])
+    train[1].append(Yr[index[i]])
+    train[2].append(Y[index[i]])
+for i in range(int(N * 0.8), int(N * 0.9)):
+    verify[0].append(X[index[i]])
+    verify[1].append(Yr[index[i]])
+    verify[2].append(Y[index[i]])
+for i in range(int(N * 0.9), int(N)):
+    test[0].append(X[index[i]])
+    test[1].append(Yr[index[i]])
+    test[2].append(Y[index[i]])
+
+p0 = np.random.randn(10)
+print("参数初始值为：", p0)
+p1 = curve_fit(model29, train[0], train[1], p0)[0]
+print("参数拟合值为:", p1)
+train_Yn = model29(train[0], *p1)
+test_Yn = model29(test[0], *p1)
+# -------------画图--------------------------
+figure, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 6), dpi=80)
+
+Y_p = model29(X, *p1)
+
+axes[0].set_title("Train")
+axes[0].plot(X, Y_p, color='r', label='predict')
+axes[0].scatter(train[0], train[1], label='exact')
+axes[0].plot(X,Y,color='g', label='func')
+train_r = RMSE(train[1], train_Yn)
+
+print("训练集RMSE=", train_r)
+axes[1].set_title("Test")
+axes[1].plot(X, Y_p, color='r', label='predict')
+axes[1].scatter(test[0], test[1], label='exact')
+axes[1].plot(X,Y,color='g', label='func')
+test_r = RMSE(test[1], test_Yn)
+print("测试集RMSE=", test_r)
+
+# figure.set_title("N="+str(N)+" h="+str(h))
+axes[0].legend()  # 默认loc=Best
+axes[1].legend()
+axes[0].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' K=' + str(K) + ' RMSE=' + str(train_r) + '\nparameter final= ' + str(
+        p1.round(4)))
+axes[1].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' K=' + str(K) + ' RMSE=' + str(test_r) + '\nparameter finial= ' + str(
+        p1.round(4)))
+
+plt.show()
+
+\end{python}
+
+\section{问题3}
+\begin{python}
+    # -- coding: utf-8 --
+import random
+
+import numpy
+import numpy as np
+from scipy.optimize import curve_fit
+import pylab as plt
+
+N = 100
+h = 0.001
+K = 2
+M = 2
+
+
+def g(x1, a, b):
+    return 1 / (b * np.sqrt(2 * np.pi)) * np.exp(-(x1 - a) ** 2 / (2 * b ** 2))
+
+
+def y(x1):
+    return g(x1, 0, 1) + g(x1, 1.5, 1)
+
+
+def RMSE(predict_v, exact_v):
+    sum = 0
+    for i in range(len(exact_v)):
+        sum += (predict_v[i] - exact_v[i]) ** 2
+    return np.sqrt(sum / len(exact_v)).round(4)
+
+
+def model300(t, w, a, b):
+    return w * np.power(t, 0) * g(t, a, b)
+
+
+def model322(t, w00, w01, w02,
+             w10, w11, w12,
+             w20, w21, w22,
+             a0, b0, a1, b1, a2, b2):
+    return w00 * np.power(t, 0) * g(t, a0, b0) + \
+           w01 * np.power(t, 1) * g(t, a0, b0) + \
+           w02 * np.power(t, 2) * g(t, a0, b0) + \
+           w10 * np.power(t, 0) * g(t, a1,b1) + \
+           w11 * np.power(t, 1) * g(t, a1, b1) + \
+            w12 * np.power(t, 2) * g(t, a1, b1) +\
+            w20 * np.power(t, 0) * g(t, a2,b2) + \
+           w21 * np.power(t, 1) * g(t, a2, b2) + \
+            w22 * np.power(t, 2) * g(t, a2, b2)
+
+
+def model311(t, w00, w01,
+             w10, w11,
+             a0, b0, a1, b1):
+    return w00 * np.power(t, 0) * g(t, a0, b0) + \
+           w01 * np.power(t, 1) * g(t, a0, b0) + \
+           w10 * np.power(t, 0) * g(t, a1,b1) + \
+           w11 * np.power(t, 1) * g(t, a1, b1)
+
+
+X = numpy.linspace(0, 4, N).round(4)
+Y = y(X)
+Yr = Y + numpy.random.normal(0, np.sqrt(h), N)
+
+index = [a for a in range(0, N)]
+random.shuffle(index)
+train = [[], [], []]
+verify = [[], [], []]
+test = [[], [], []]
+for i in range(0, int(N * 0.8)):
+    train[0].append(X[index[i]])
+    train[1].append(Yr[index[i]])
+    train[2].append(Y[index[i]])
+for i in range(int(N * 0.8), int(N * 0.9)):
+    verify[0].append(X[index[i]])
+    verify[1].append(Yr[index[i]])
+    verify[2].append(Y[index[i]])
+for i in range(int(N * 0.9), int(N)):
+    test[0].append(X[index[i]])
+    test[1].append(Yr[index[i]])
+    test[2].append(Y[index[i]])
+
+p0 = np.random.randn(8)
+print("参数初始值为：", p0)
+p1 = curve_fit(model311, train[0], train[1], p0)[0]
+print("参数拟合值为:", p1)
+train_Yn = model311(train[0], *p1)
+test_Yn = model311(test[0], *p1)
+# -------------画图--------------------------
+figure, axes = plt.subplots(nrows=1, ncols=2, figsize=(15, 6), dpi=80)
+
+Y_p = model311(X, *p1)
+
+axes[0].set_title("Train")
+axes[0].plot(X, Y_p, color='r', label='predict')
+axes[0].scatter(train[0], train[1], label='exact')
+axes[0].plot(X, Y, color='g', label='func')
+train_r = RMSE(train[1], train_Yn)
+
+print("训练集RMSE=", train_r)
+axes[1].set_title("Test")
+axes[1].plot(X, Y_p, color='r', label='predict')
+axes[1].scatter(test[0], test[1], label='exact')
+axes[1].plot(X, Y, color='g', label='func')
+test_r = RMSE(test[1], test_Yn)
+print("测试集RMSE=", test_r)
+
+# figure.set_title("N="+str(N)+" h="+str(h))
+axes[0].legend()  # 默认loc=Best
+axes[1].legend()
+axes[0].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' K=' + str(K) + ' M=' + str(M) + ' RMSE=' + str(
+        train_r) + '\nparameter final= ' + str(
+        p1.round(4)))
+axes[1].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' K=' + str(K) + ' M=' + str(M) + ' RMSE=' + str(
+        test_r) + '\nparameter finial= ' + str(
+        p1.round(4)))
+
+plt.show()
+
+\end{python}
+
+\section{问题4}
+
+\begin{python}
+    # -- coding: utf-8 --
+import random
+
+import numpy
+import numpy as np
+from scipy.optimize import curve_fit
+import pylab as plt
+
+N = 100
+h = 0.001
+
+
+def g(x1, a, b):
+    return 1 / (b * np.sqrt(2 * np.pi)) * np.exp(-(x1 - a) ** 2 / (2 * b ** 2))
+
+
+def y(x1):
+    return g(x1, 0, 1) + g(x1, 1.5, 1)
+
+
+def RMSE(predict_v, exact_v):
+    sum = 0
+    for i in range(len(exact_v)):
+        sum += (predict_v[i] - exact_v[i]) ** 2
+    return np.sqrt(sum / len(exact_v)).round(4)
+
+
+def model4(t, a, b, c):
+    xx = np.multiply(b,t)
+    return a * np.cos(xx) + c
+
+
+def model4b(t, a, c):
+    xx = np.multiply(10000, t)
+    return a * np.cos(xx) + c
+
+
+X = numpy.linspace(0, 4, N).round(4)
+Y = y(X)
+Yr = Y + numpy.random.normal(0, np.sqrt(h), N)
+
+index = [a for a in range(0, N)]
+random.shuffle(index)
+train = [[], [], []]
+verify = [[], [], []]
+test = [[], [], []]
+for i in range(0, int(N * 0.8)):
+    train[0].append(X[index[i]])
+    train[1].append(Yr[index[i]])
+    train[2].append(Y[index[i]])
+for i in range(int(N * 0.8), int(N * 0.9)):
+    verify[0].append(X[index[i]])
+    verify[1].append(Yr[index[i]])
+    verify[2].append(Y[index[i]])
+for i in range(int(N * 0.9), int(N)):
+    test[0].append(X[index[i]])
+    test[1].append(Yr[index[i]])
+    test[2].append(Y[index[i]])
+
+p0 = [1,1]
+print("参数初始值为：", p0)
+p1 = curve_fit(model4b, train[0], train[1], p0)[0]
+print("参数拟合值为:", p1)
+train_Yn = model4b(train[0], *p1)
+test_Yn = model4b(test[0], *p1)
+verify_Yn = model4b(verify[0], *p1)
+# -------------画图--------------------------
+figure, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 6), dpi=80)
+
+Y_p = model4b(X, *p1)
+
+axes[0].set_title("Train")
+axes[0].plot(X, Y_p, color='r', label='predict')
+axes[0].scatter(train[0], train[1], label='exact')
+axes[0].plot(X, Y, color='g', label='func')
+train_r = RMSE(train[1], train_Yn)
+print("训练集RMSE=", train_r)
+
+axes[1].set_title("Test")
+axes[1].plot(X, Y_p, color='r', label='predict')
+axes[1].scatter(test[0], test[1], label='exact')
+axes[1].plot(X, Y, color='g', label='func')
+test_r = RMSE(test[1], test_Yn)
+print("测试集RMSE=", test_r)
+
+axes[2].set_title("Verify")
+axes[2].plot(X, Y_p, color='r', label='predict')
+axes[2].scatter(verify[0], verify[1], label='exact')
+axes[2].plot(X, Y, color='g', label='func')
+verify_r = RMSE(test[1], verify_Yn)
+print("验证集RMSE=", verify_r)
+
+# figure.set_title("N="+str(N)+" h="+str(h))
+axes[0].legend()  # 默认loc=Best
+axes[1].legend()
+axes[0].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(
+        train_r) + '\nparameter final= ' + str(
+        p1.round(4)))
+axes[1].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(
+        test_r) + '\nparameter finial= ' + str(
+        p1.round(4)))
+axes[2].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(
+        verify_r) + '\nparameter finial= ' + str(
+        p1.round(4)))
+
+plt.show()
+
+\end{python}
+\section{问题5}
+\begin{python}
+    
+    # -- coding: utf-8 --
+import random
+
+import numpy
+import numpy as np
+from scipy.optimize import curve_fit
+import pylab as plt
+
+N = 100
+h = 0.001
+
+
+def g(x1, a, b):
+    return 1 / (b * np.sqrt(2 * np.pi)) * np.exp(-(np.add(x1, -a)) ** 2 / (2 * b ** 2))
+
+
+def y(x1):
+    return g(x1, 0, 1) + g(x1, 1.5, 1)
+
+
+def RMSE(predict_v, exact_v):
+    sum = 0
+    for i in range(len(exact_v)):
+        sum += (predict_v[i] - exact_v[i]) ** 2
+    return np.sqrt(sum / len(exact_v)).round(4)
+
+
+def model4(t):
+    xx = np.multiply(-0.5824, t)
+    return 0.3733 * np.cos(xx) + 0.2441
+
+
+def model3(t):
+    return -2.90721005e+00 * np.power(t, 0) * g(t, 1.36713804e+00, -1.44028058e+00) + \
+           6.51344613e-01 * np.power(t, 1) * g(t, 1.36713804e+00, -1.44028058e+00) + \
+           -3.14073751e+02 * np.power(t, 0) * g(t, -1.21483365e+01, 1.38207755e+00) + \
+           -1.46424351e+04 * np.power(t, 1) * g(t, -1.21483365e+01, 1.38207755e+00)
+
+
+def model2(t):
+    return 0.49782277 + 0.34518524 * np.power(t, 1) + -0.27614233 * np.power(t, 2) + 0.04031836 * np.power(t, 3)
+
+
+X = numpy.linspace(0, 4, N).round(4)
+Y = y(X)
+Yr = Y + numpy.random.normal(0, np.sqrt(h), N)
+
+index = [a for a in range(0, N)]
+random.shuffle(index)
+train = [[], [], []]
+verify = [[], [], []]
+test = [[], [], []]
+for i in range(0, int(N * 0.8)):
+    train[0].append(X[index[i]])
+    train[1].append(Yr[index[i]])
+    train[2].append(Y[index[i]])
+for i in range(int(N * 0.8), int(N * 0.9)):
+    verify[0].append(X[index[i]])
+    verify[1].append(Yr[index[i]])
+    verify[2].append(Y[index[i]])
+for i in range(int(N * 0.9), int(N)):
+    test[0].append(X[index[i]])
+    test[1].append(Yr[index[i]])
+    test[2].append(Y[index[i]])
+
+model2_Yn = model2(verify[0])
+model3_Yn = model3(verify[0])
+model4_Yn = model4(verify[0])
+# -------------画图--------------------------
+figure, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 6), dpi=80)
+
+Y_p2 = model2(X)
+Y_p3 = model3(X)
+Y_p4 = model4(X)
+
+axes[0].set_title("model2")
+axes[0].plot(X, Y_p2, color='r', label='predict')
+axes[0].scatter(verify[0], verify[1], label='exact')
+axes[0].plot(X, Y, color='g', label='func')
+model2_r = RMSE(verify[2], model2_Yn)
+print("model2 verify RMSE=", model2_r)
+
+axes[1].set_title("model3")
+axes[1].plot(X, Y_p3, color='r', label='predict')
+axes[1].scatter(verify[0], verify[1], label='exact')
+axes[1].plot(X, Y, color='g', label='func')
+model3_r = RMSE(verify[2], model3_Yn)
+print("model3 verify RMSE=", model3_r)
+
+axes[2].set_title("Verify")
+axes[2].plot(X, Y_p4, color='r', label='predict')
+axes[2].scatter(verify[0], verify[1], label='exact')
+axes[2].plot(X, Y, color='g', label='func')
+model4_r = RMSE(verify[2], model4_Yn)
+print("model4 verify RMSE=", model4_r)
+
+# figure.set_title("N="+str(N)+" h="+str(h))
+axes[0].legend()  # 默认loc=Best
+axes[1].legend()
+axes[0].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(
+        model2_r) )
+axes[1].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(
+        model3_r) )
+axes[2].set_xlabel(
+    ' N=' + str(N) + ' h=' + str(h) + ' RMSE=' + str(
+        model4_r) )
+
+plt.show()
+
+model2_Ynt = model2(test[0])
+model3_Ynt = model3(test[0])
+model4_Ynt = model4(test[0])
+
+model2_rt = RMSE(test[2], model2_Ynt)
+print("model2 test RMSE=", model2_rt)
+model3_rt = RMSE(test[2], model3_Ynt)
+print("model3 test RMSE=", model3_rt)
+model4_rt = RMSE(test[2], model4_Ynt)
+print("model4 test RMSE=", model4_rt)
+\end{python}
